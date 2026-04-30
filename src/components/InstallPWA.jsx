@@ -6,7 +6,12 @@ import { useState, useEffect } from 'react';
  */
 export default function InstallPWA() {
   const [deferredPrompt, setDeferredPrompt] = useState(null);
-  const [isInstalled, setIsInstalled] = useState(false);
+  const [isInstalled, setIsInstalled] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return window.matchMedia('(display-mode: standalone)').matches;
+    }
+    return false;
+  });
 
   useEffect(() => {
     // Capture the install prompt event
@@ -23,11 +28,6 @@ export default function InstallPWA() {
 
     window.addEventListener('beforeinstallprompt', handler);
     window.addEventListener('appinstalled', installedHandler);
-
-    // Check if running in standalone mode (already installed)
-    if (window.matchMedia('(display-mode: standalone)').matches) {
-      setIsInstalled(true);
-    }
 
     return () => {
       window.removeEventListener('beforeinstallprompt', handler);

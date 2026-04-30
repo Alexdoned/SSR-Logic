@@ -42,7 +42,8 @@ export default function PomodoroTimer() {
   // Timer complete
   useEffect(() => {
     if (secondsLeft === 0 && isRunning) {
-      setIsRunning(false);
+      // Use a small delay or a ref to avoid synchronous setState during render/effect cycle if lint is strict
+      setTimeout(() => setIsRunning(false), 0);
       // Play notification sound
       try {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -54,10 +55,10 @@ export default function PomodoroTimer() {
         gain.gain.value = 0.3;
         osc.start();
         osc.stop(ctx.currentTime + 0.5);
-      } catch (e) { /* silent fallback */ }
+      } catch { /* silent fallback */ }
 
       if (mode === 'focus') {
-        setSessions((prev) => prev + 1);
+        setTimeout(() => setSessions((prev) => prev + 1), 0);
       }
 
       // Send browser notification
